@@ -3,48 +3,42 @@
 namespace App\Services;
 
 use App\Models\Category;
-use App\Models\CategoryTranslation;
+use App\Models\Product;
 
 class CategoryService
 {
     // get all categories
     public function get_all_categories()
     {
-        $all_categories = Category::with('translate')->get();
+        $all_categories = Category::all();
         return $all_categories;
     }
 
     //get one category
     public function get_one_category($request)
     {
-        $one_category = Category::where('id', $request->category_id)->with('translate')->get();
+        $one_category = Category::where('id', $request->category_id)->get();
         return $one_category;
     }
 
     //create new category
-    public function create_category($request,$translation)
+    public function create_category($request)
     {
         $new_category = Category::create([
+            'name'  => $request->name,
             'image' => $request->image,
-        ])->translate()->create([
-            'category_id' => $translation->category_id,
-            'name' => $translation->name,
-            'local'=>$translation->local,
         ]);
-        $new_category = Category::where('image', $request->image)->with('translate')->get();
         return $new_category;
     }
 
     //update category
-    public function update_category($request,$translation,$id)
+    public function update_category($request)
     {
-        $update = Category::where('id',$id->category_id)
-        ->update(['image' =>$request->image]);
-        $update = CategoryTranslation::where('category_id' ,$id->category_id)->update([
-            'name' => $translation->name,
-            'local'=>$translation->local,
+        $update = Category::where('id',$request->id)->update([
+            'name'  => $request->name,
+            'image' =>$request->image
         ]);
-        $update = Category::where('id',$id->category_id)->with('translate')->get();
+        $update = Category::where('id',$request->id)->get();
         return $update;
     }
 
@@ -53,6 +47,15 @@ class CategoryService
     {
         $delete = Category::where('id',$request->id)->delete();
         return true;
+    }
+
+    public function search($search_keyword)
+    {
+        $data = [];
+        $products = Product::whereHas('category', function ($query) use ($search_keyword) {
+            $query->where('name', $search_keyword);
+        })->get();
+        return $products;
     }
 
 }

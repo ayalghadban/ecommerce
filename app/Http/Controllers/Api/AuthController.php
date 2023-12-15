@@ -27,7 +27,7 @@ class AuthController extends Controller
     public function customerLogin(UserRequest $request)
     {
         $data = $this->service->loginUser($request);
-        if($data == 0)
+        if($data == 'error')
             return $this->sendError(__('auth.wrong_credentials'));
         return $this->sendResponse(__('auth.login_success'), $data);
     }

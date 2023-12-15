@@ -9,15 +9,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Category extends Model
 {
     use HasFactory;
+    protected $fillable = ['name', 'image'];
 
-    protected $table = 'categories';
-    protected $fillable = ['image'];
-    public function products() : HasMany
-    {
-        return $this->hasMany(Product::class,'category_id','id');
+    public function subCategory() : HasMany {
+        return $this->hasMany(SubCategory::class);
     }
-    public function translate() : HasMany
+
+    public function product() : HasMany {
+        return $this->hasMany(Product::class);
+    }
+    
+    public function images()
     {
-        return $this->hasMany(CategoryTranslation::class,'category_id','id');
+        return $this->morphMany(MorphMedia::class, 'morph_filable');
     }
 }

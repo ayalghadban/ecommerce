@@ -10,54 +10,48 @@ class ProductService
     // get all products
     public function get_all_products()
     {
-        $all_products = Product::with('translate1')->get();
+        $all_products = Product::all();
         return $all_products;
     }
 
     //get one product
     public function get_one_product($request)
     {
-        $one_product = Product::where('id', $request->product_id)->with('translate1')->get();
+        $one_product = Product::where('id', $request->id)->get();
         return $one_product;
     }
 
     //create new product
-    public function create_product($request,$translation)
+    public function create_product($request)
     {
         $new_product = Product::create([
             'category_id' => $request->category_id,
+            'sub_category_id' => $request->sub_category_id,
+            'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'image' => $request->image,
-            'is_featured' => $request->is_featured
-        ])->translate1()->create([
-            'name' => $translation->name,
-            'local' => $translation->local
         ]);
-        $new_product = Product::where('image', $request->image)->with('translate1')->first();
         return $new_product;
     }
 
     //update product
-    public function update_product($request,$translation,$id)
+    public function update_product($request)
     {
-        $update = Product::where('id',$id->product_id)
+        $update = Product::where('id',$request->id)
         ->update([
             'category_id' => $request->category_id,
+            'sub_category_id' => $request->sub_category_id,
+            'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'image' => $request->image,
-            'is_featured' => $request->is_featured
         ]);
-        $update = ProductTranslation::where('product_id' ,$id->product_id)->update([
-            'name' => $translation->name,
-            'local' => $translation->local
-        ]);
-        $update =Product::where('id',$id->product_id)->with('translate1')->get();
+        $update =Product::where('id',$request->id)->get();
         return $update;
     }
 
-    //delete category
+    //delete product
     public function delete_product($request)
     {
         $delete = Product::where('id',$request->id)->delete();
@@ -65,13 +59,10 @@ class ProductService
     }
 
     //search products
-    public function search_product($search_keyword)
+    public function search_product_by_price($search_keyword)
     {
         $data = [];
-        $product = Product::where('description', 'LIKE', '%' . $search_keyword . '%')->with('translate1')->get();
-       /*$product =Product::whereHas("translate1",function ($query){
-            $query->where('name', 'LIKE', '%' . $query . '%')->get();
-        });*/
+        $product = Product::where('price', 'LIKE', '%' . $search_keyword . '%')->get();
         $data = $product;
 
         return $data;

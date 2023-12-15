@@ -12,7 +12,7 @@ class UserController extends Controller
     }
 
     //get all users
-    public function get_all_users()
+    public function all()
     {
         $all_users = $this->service->get_all_users();
         return $this->sendResponse(__('messages.get_user_successfully'), $all_users);
@@ -20,7 +20,7 @@ class UserController extends Controller
     }
 
     //get one user
-    public function get_one_user(GetUserRequest $request)
+    public function one_user(GetUserRequest $request)
     {
         $user = $this->service->get_one_user($request);
 
@@ -28,7 +28,7 @@ class UserController extends Controller
     }
 
     //create a new user
-    public function create_user(UserRequest $request)
+    public function create(UserRequest $request)
     {
         $new_user = $this->service->create_user($request);
 
@@ -36,7 +36,7 @@ class UserController extends Controller
     }
 
     // update a user
-    public function update_user(UserRequest $request,GetUserRequest $request_id)
+    public function update(UserRequest $request,GetUserRequest $request_id)
     {
         $update = $this->service->update_user($request,$request_id);
 
@@ -44,7 +44,7 @@ class UserController extends Controller
     }
 
     //delete a user
-    public function delete_user(GetUserRequest $request)
+    public function delete(GetUserRequest $request)
     {
         $delete = $this->service->delete_user($request);
 

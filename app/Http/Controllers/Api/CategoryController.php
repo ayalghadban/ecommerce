@@ -18,4 +18,11 @@ class CategoryController extends Controller
         return $this->sendResponse(__(''),$all_categories);
     }
 
+    public function search( $request)
+    {
+
+        $success = $this->service->search($request->search_keyword);
+        return $this->sendResponse('', $success);
+    }
+
 }
