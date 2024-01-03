@@ -3,14 +3,13 @@
 namespace App\Enums;
 
 use BenSampo\Enum\Enum;
-use Illuminate\Validation\Rules\Enum as RulesEnum;
 
 /**
  * @method static static OptionOne()
  * @method static static OptionTwo()
  * @method static static OptionThree()
  */
-final class CategoryLevelEnum extends RulesEnum
+final class CategoryLevelEnum extends Enum
 {
     const Fisrt = 1;
     const Second = 2;

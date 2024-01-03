@@ -18,10 +18,10 @@ class AuthController extends Controller
         $success = AuthService::customerRegister($request);
 
         if(!$success) {
-            return $this->sendError(__('auth.failed_code_sent'), 401);
+            return $this->sendError(__('auth.failed'), 401);
         }
 
-        return $this->sendResponse(__('auth.verify_code'), $success);
+        return $this->sendResponse(__('auth.register_success'), $success);
     }
 
     public function customerLogin(CustomerLoginRequest $request)

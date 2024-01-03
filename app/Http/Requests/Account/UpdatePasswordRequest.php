@@ -16,7 +16,7 @@ class UpdatePasswordRequest extends BaseRequest
     {
         return [
             'old_password' => 'required|string|max:255|min:8',
-            'new_password' => 'required|string|max:255|min:8|confirmed',
+            'new_password' => 'required|string|max:255|min:8',
         ];
     }
 }

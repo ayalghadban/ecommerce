@@ -26,7 +26,7 @@ class AuthService
 
             $success['full_name'] = $user->full_name;
             $success['phone'] = $user->phone;
-
+            //$success['token'] = $user->createToken('ayagh123',['costumer-api'])->plainTextToken;
             return $success;
         } else {
             return false;
@@ -42,7 +42,7 @@ class AuthService
         if (auth()->attempt($credentials)) {
 
             if ($user) {
-                $success['token'] = $user->createToken('MyApp', ['customer-api'])->plainTextToken;
+                $success['token'] = $user->createToken('ayagh123', ['customer-api'])->plainTextToken;
                 $success['user'] = $user;
                 $success['role'] = "customer";
                 return $success;

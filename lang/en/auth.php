@@ -21,5 +21,6 @@ return [
     'can_not_login' => 'You cannot login',
     'login_success' => 'Logged in Successfully',
     'logout_success' => 'Logout Successfully',
+    'register_success' => 'Register Successfully'
 
 ];
