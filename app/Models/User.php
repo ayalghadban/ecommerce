@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -20,10 +19,17 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'full_name',
         'email',
-        'phone',
         'password',
+        'is_verified',
+        'phone',
+        'image',
+        'fcm_token',
+        'user_uid',
+        'messageID',
+        'sms_code',
+        'wishlist_items_count',
     ];
 
     /**
@@ -43,16 +49,15 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        //'password' => 'hashed',
     ];
 
-    public function cart() : HasOne
+    public function cart()
     {
         return $this->hasOne(Cart::class);
     }
 
-    public function order() : HasMany
+    public function address()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasOne(UserAddress::class);
     }
 }

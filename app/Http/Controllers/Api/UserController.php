@@ -1,43 +1,55 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DashBoard\User\GetUserRequest;
-use App\Http\Requests\DashBoard\User\UserRequest;
+use App\Http\Requests\Account\UpdatePasswordRequest;
+use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Services\UserService;
 
 class UserController extends Controller
 {
+    private UserService $userService ;
 
-    public function __construct(private UserService $userService){
+    public function __construct(UserService $userService) {
+        $this->userService = $userService ;
     }
 
-    //get user information
-    public function get_profile()
+    public function getProfile()
     {
         $user = auth()->user();
-        $success = $this->userService->get_one_user($user->id);
+        $success['user'] = $this->userService->getProfile($user->id);
 
         return $this->sendResponse('', $success);
 
     }
 
-    //update user information
-    public function update_user(UserRequest $request, GetUserRequest $id)
+    public function updateUserInfo(UpdateProfileRequest $request)
     {
         $user = auth()->user();
-        $success = $this->userService->update_user($request,$id);
+        $success = $this->userService->updateUserInfo($user->id, $request->full_name, $request->email);
 
         return $this->sendResponse(__('messages.updated_successfully'), $success);
     }
 
-    //delete user account
-    public function delete_user_account()
+    public function updateUserPassword(UpdatePasswordRequest $request)
     {
         $user = auth()->user();
 
-        $success = $this->userService->delete_user($user->id);
+        $success = $this->userService->updateUserPassword($user->id, $request->old_password, $request->new_password);
+
+        if (!$success) {
+            return $this->sendError(__('messages.wrong_old_password'), 400);
+        } else {
+            return $this->sendResponse(__('messages.updated_successfully'), $success);
+        }
+    }
+
+    public function deleteUserAccount()
+    {
+        $user = auth()->user();
+
+        $success = $this->userService->deleteAccount($user->id);
         return $this->sendResponse(__('messages.account_deleted_sucsessfully'), $success);
     }
 }

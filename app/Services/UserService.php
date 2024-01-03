@@ -3,50 +3,94 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class UserService
+ * @package App\Services
+ */
 class UserService
 {
-    // get all users
-    public function get_all_users()
+    public static function getProfile($user_id)
     {
-        $all_users = User::where('email',null)->get();
-        return $all_users;
+        $data = [];
+        $data = User::where('id', $user_id)->first();
+
+        return $data;
     }
 
-    //get one user
-    public function get_one_user($request)
+    public static function updateUserInfo($user_id, $full_name = null, $email = null)
     {
-        $user = User::where('id',$request->user_id)->get();
-        return $user;
+        $user = User::where('id', $user_id)->first();
 
-    }
-    //create a new user
-    public function create_user($request)
-    {
-        $new_user = User::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'password' => $request->password
-        ]);
-        return $new_user;
-    }
+        if (isset($full_name)) {
+            $user->full_name = $full_name;
+        }
 
-    //update a user
-    public function update_user($request,$request_id)
-    {
-        $update = User::where('id',$request_id->user_id)->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'password' => $request->password,
-        ]);
-        $update = User::where('id',$request_id->user_id)->get();
-        return $update;
+        if (isset($email)) {
+            $user->email = $email;
+        }
+
+        $user->save();
+
+        return [];
     }
 
-    //delete a user
-    public function delete_user($request){
-        $delete = User::where('id',$request->user_id)->delete();
+    public static function updateUserPassword($user_id, $old_password, $new_password)
+    {
+        $user = User::where('id', $user_id)->first();
+
+        if (Hash::check($old_password, $user->password)) {
+            $user->password = Hash::make($new_password);
+        } else {
+            return false;
+        }
+
+        $user->save();
 
         return true;
+    }
+
+    public static function deleteAccount($user_id)
+    {
+        $user = User::findOrFail($user_id);
+        
+        auth()->user()->tokens->each(function ($token, $key) {
+            $token->delete();
+        });
+
+        $user->delete();
+        return [];
+    }
+
+    // Account
+    public static function all($per_page = 8, $search_keyword = null)
+    {
+        $data = [];
+
+        $users = User::where('email', null);
+
+        if ($search_keyword) {
+            $users->where((function ($query) use ($search_keyword) {
+                $query->where('full_name', 'LIKE', '%'.$search_keyword.'%')
+                    ->orWhere('email', 'LIKE', '%'.$search_keyword.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$search_keyword.'%');
+            }));
+        }
+
+        $data = $users->paginate($per_page);
+
+        return $data;
+    }
+    
+    public static function updateUserAddressByUser($user_id,$address_request, $order_id)
+    {
+        $user = User::where('id', $user_id)->first();
+        $user_address = $user->address()->create($address_request);
+
+        $user_address->order_id = $order_id;
+        $user_address->save();
+        
+        return [];
     }
 }

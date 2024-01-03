@@ -3,48 +3,57 @@
 namespace App\Http\Controllers\DashBoard;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DashBoard\Product\GetProductRequest;
-use App\Http\Requests\DashBoard\Product\ProductRequest;
-use App\Http\Requests\DashBoard\Product\TranslationProductRequest;
+use App\Http\Requests\Product\AddProductRequest;
+use App\Http\Requests\Product\AllProductsRequest;
+use App\Http\Requests\Product\GetProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Product\UpdateProductStatusRequest;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public  function __construct (private ProductService  $service){
+    private ProductService $productService;
+
+    public function __construct(ProductService $productService){
+
+        $this->productService = $productService;
     }
 
-    // get all products
-    public function get_all_products()
+    public function all(AllProductsRequest $request)
     {
-        $all_products = $this->service->get_all_products();
-        return $this->sendResponse(__('messages.get_all_products'),$all_products);
-    }
-    // get one product
-    public function get_one_product(GetProductRequest $request)
-    {
-        $one_product = $this->service->get_one_product($request);
-        return $this->sendResponse(__('messages.gat_one_product'),$one_product);
+        $success = $this->productService->all($request->per_page , $request->search);
+        return $this->sendResponse('', $success);
     }
 
-    //create product
-    public function create_product(ProductRequest $request,TranslationProductRequest $translation)
+    public function getProduct(GetProductRequest $request)
     {
-        $new_product = $this->service->create_product($request,$translation);
-        return $this-> sendResponse(__('messages.create_product'),$new_product);
+        $success = $this->productService->getProduct($request->product_id);
+        return $this->sendResponse('', $success);
     }
 
-    //update product
-    public function update_product(ProductRequest $request,TranslationProductRequest $translation, GetProductRequest $id)
+    public function addProduct(AddProductRequest $request)
     {
-        $update = $this->service->update_product($request,$translation,$id);
-        return $this-> sendResponse(__('messages.update_product'),$update);
+        $success = $this->productService->addProduct($request);
+        return $this->sendResponse(__('messages.added_successfully'), $success);
     }
 
-    //delete product
-    public function  delete_product(GetProductRequest $request)
+    public function updateProduct(UpdateProductRequest $request)
     {
-        $delete = $this->service->delete_product($request);
-        return $this-> sendResponse(__('messages.delete_product'),$delete);
+        $success = $this->productService->updateProduct($request);
+        return $this->sendResponse(__('messages.updated_successfully'), $success);
     }
 
+    public function deleteProduct(Request $request)
+    {
+        $success = $this->productService->deleteProduct($request->product_id);
+        return $this->sendResponse(__('messages.deleted_successfully'), $success);
+    }
+
+    public function updateProductStatus(UpdateProductStatusRequest $request)
+    {
+        $success = $this->productService->updateProductStatus($request->product_id, $request->new_status);
+        return $this->sendResponse(__('messages.updated_successfully'), $success);
+    }
+    
 }

@@ -13,24 +13,13 @@ return [
     |
     */
 
+    'failed' => 'These credentials do not match our records.',
+    'password' => 'The provided password is incorrect.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
     'wrong_credentials' => 'These credentials do not match our records, please try again.',
+    'can_not_login' => 'You cannot login',
     'login_success' => 'Logged in Successfully',
     'logout_success' => 'Logout Successfully',
-    'register_success' => 'Register Successfully',
-    'register_error' => 'Registration Error, please try again.',
 
-    'unauthorized' => "You don't have permissions to access this page!",
-    'max_size_image' => 'Uploaded Image is too large, please upload a smaller one',
-    'user_not_verified' => 'This account is not verified',
-    'phone_error'=>'Phone Already been Taken',
-
-    'error_code' => 'code is wrong',
-    'success_verified' => 'code verified successfully',
-    'already_verified' => 'code already verified successfully',
-    'success_code_sent' => 'code sent successfully',
-    'failed_code_sent' => 'The code was not sent successfully, please try again',
-
-    'change_password_successfully' => 'Changed Password Successfully',
-
-    'user_not_verified' => 'This account is not verified',
 ];

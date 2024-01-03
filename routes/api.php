@@ -1,51 +1,74 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CartController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\HomeController;
+use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\WishlistController;
+use App\Http\Controllers\ContactUsController;
 use Illuminate\Support\Facades\Route;
 
-
-
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
 
 // Register Customer
-Route::post('/register', [AuthController::class, 'register']);
+
+
+
+
+Route::post('register', [AuthController::class, 'register']);
 // Login Customer
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'customerLogin']);
+
+
 // Product
-Route::get('/search_product', [ProductController::class, 'search_product']);
-Route::get('/get_product', [ProductController::class, 'get_product']);
+Route::get('search_product', [ProductController::class, 'searchProduct']);
+Route::get('all_products', [ProductController::class, 'allProducts']);
+Route::get('get_product', [ProductController::class, 'getProduct']);
 
-// get all category
-Route::get('/category' , [CategoryController::class , 'get_all_categories']);
+    // get all category
+Route::get('category' , [CategoryController::class , 'getAllCategory']);
+Route::group(['middleware' => ['auth:sanctum'] ], function () {
 
-Route::group(['middleware' => ['auth:sanctum'] ], function ()
-{
     // Logout
     Route::get('logout', [AuthController::class, 'logout']);
 
     // Edit User Info
-    Route::prefix('account')->group( function () {
-        Route::get('/show_profile', [UserController::class, 'get_profile']);
-        Route::post('/update', [UserController::class, 'update_user']);
-        Route::post('/delete', [UserController::class, 'delete_user_account']);
+    Route::group(['prefix' => 'account'], function () {
+        Route::get('/show_profile', [UserController::class, 'getProfile']);
+        Route::post('/update', [UserController::class, 'updateUserInfo']);
+        Route::post('/update_password', [UserController::class, 'updateUserPassword']);
+        Route::post('/delete', [UserController::class, 'deleteUserAccount']);
     });
 
     // Cart
-    Route::prefix('cart')->group( function () {
-        Route::get('/details', [CartController::class, 'get_cart_details']);
-        Route::post('/add_product', [CartController::class, 'add_product_to_cart']);
-        Route::post('/remove_product', [CartController::class, 'remove_product_from_cart']);
+    Route::group(['prefix' => 'cart'], function () {
+        Route::get('/details', [CartController::class, 'getCartDetails']);
+        Route::post('/add_product', [CartController::class, 'addProductToCart']);
+        Route::post('/remove_product', [CartController::class, 'removeProductFromCart']);
     });
 
     // Order
-    Route::prefix('order')->group( function () {
-        Route::get('/all_orders', [OrderController::class, 'get_all_orders']);
-        Route::get('/search_order',[OrderController::class, 'search_order']);
-        Route::post('/create_order',[OrderController::class, 'create_order']);
-        Route::post('/update_order',[OrderController::class, 'update_order']);
-        Route::delete('/delete_order',[OrderController::class, 'delete_order']);
+    Route::group(['prefix' => 'order'], function () {
+        Route::post('checkout', [OrderController::class, 'userCheckout']);
+        Route::get('all', [OrderController::class, 'getUserOrders']);
+        Route::get('details', [OrderController::class, 'getOrderTrackDetails']);
+        Route::get('cancel', [OrderController::class, 'cancelOrder']);
     });
+
+
 });
+
+
+

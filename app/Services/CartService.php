@@ -6,14 +6,16 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 
+/**
+ * Class CartService
+ * @package App\Services
+ */
 class CartService
 {
-    public function updateCartPrices($cart_id)
+    public static function updateCartPrices($cart_id)
     {
         $cart = Cart::where('id', $cart_id)->first();
 
-        $sub_total = 0;
-        $delivery_fees = $cart->delevery_fees;
         $overall_total = 0;
         $cart_items_count = 0;
 
@@ -23,14 +25,10 @@ class CartService
 
             $product = Product::where('id', $cart_item->product_id)->first();
             $product_price = $product->product_price;
-            $sub_total += $product_price * $cart_item->quantity;
+            $overall_total += $product_price * $cart_item->quantity;
             $cart_items_count++;
         }
 
-        $overall_total = $sub_total + $delivery_fees;
-
-        $cart->sub_total = $sub_total;
-        $cart->delivery_fees = $delivery_fees;
         $cart->overall_total = $overall_total;
         $cart->cart_items_count = $cart_items_count;
         $cart->save();
@@ -38,7 +36,7 @@ class CartService
         return $cart;
     }
 
-    public  function checkCartIfEmpty($user_id)
+    public static function checkCartIfEmpty($user_id)
     {
         $cart = Cart::where('user_id', $user_id)->first();
 
@@ -49,7 +47,7 @@ class CartService
         }
     }
 
-    public function getCartDetails($cart_id)
+    public static function getCartDetails($cart_id)
     {
         $data = [];
 
@@ -62,7 +60,7 @@ class CartService
         return $data;
     }
 
-    public function addProductToCart($user, $product_id, $quantity)
+    public static function addProductToCart($user, $product_id, $quantity)
     {
         $cart = $user->cart()->first();
 
@@ -83,8 +81,6 @@ class CartService
         } else {
 
             $cart = $user->cart()->create([
-                'sub_total' => 0,
-                'delivery_fees' => 0,
                 'overall_total' => 0,
                 'cart_items_count' => 1,
             ]);
@@ -100,7 +96,7 @@ class CartService
         return [];
     }
 
-    public function removeProductFromCart($cart, $product_id)
+    public static function removeProductFromCart($cart, $product_id)
     {
         if (isset($cart)) {
 
@@ -126,7 +122,7 @@ class CartService
         }
     }
 
-    public function checkCartProductsQuantities($cart)
+    public static function checkCartProductsQuantities($cart)
     {
         $cart_items = $cart->cartItems()->get();
         foreach ($cart_items as $cart_item) {
@@ -138,7 +134,7 @@ class CartService
         return true;
     }
 
-    public function getCartTotalsForOrder($cart_id)
+    public static function getCartTotalsForOrder($cart_id)
     {
         $data = (object) [];
 
@@ -147,14 +143,12 @@ class CartService
         }
 
         $cart = Cart::where('id', $cart_id)->first();
-        $data->sub_total = $cart->sub_total;
-        $data->delivery_fees = $cart->delivery_fees;
         $data->overall_total = $cart->overall_total;
 
         return $data;
     }
 
-    public function getCartProductsForOrder($cart_id)
+    public static function getCartProductsForOrder($cart_id)
     {
         $data['products'] = [];
 

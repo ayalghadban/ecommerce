@@ -1,43 +1,45 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Auth\RegisterUserRequest;
-use App\Http\Requests\DashBoard\User\UserRequest;
+use App\Http\Requests\Auth\CustomerLoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ResendCodeRequest;
+use App\Http\Requests\Auth\VerifiedRequest;
 use App\Services\AuthService;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function __construct (private AuthService  $service){
-    }
 
-    //register user
-    public function register(RegisterUserRequest $request)
+    public function register(RegisterRequest $request)
     {
-        $data = $this->service->register($request);
+        $success = AuthService::customerRegister($request);
 
-        if(!$data) {
-            return $this->sendError(__('auth.register_error'));
+        if(!$success) {
+            return $this->sendError(__('auth.failed_code_sent'), 401);
         }
-        return $this->sendResponse(__('auth.register_success'), $data);
+
+        return $this->sendResponse(__('auth.verify_code'), $success);
     }
 
-    //login user
-    public function customerLogin(UserRequest $request)
+    public function customerLogin(CustomerLoginRequest $request)
     {
-        $data = $this->service->loginUser($request);
-        if($data == 0)
-            return $this->sendError(__('auth.wrong_credentials'));
-        return $this->sendResponse(__('auth.login_success'), $data);
+        $success = AuthService::customerLogin($request->phone, $request->password);
+
+        if($success == 1) {
+            return $this->sendError( __('auth.can_not_login'), 402);
+        } elseif($success == 2) {
+            return $this->sendError( __('auth.wrong_credentials'), 400);
+        }
+
+        return $this->sendResponse(__('auth.login_success'), $success);
     }
 
-    // logout user
-    public function logout($request)
+    public function logout()
     {
-        $data = $this->service->logoutUser($request);
+        AuthService::logout();
         return $this->sendResponse(__('auth.logout_success'));
     }
-
-
 }

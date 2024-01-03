@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Product\AddProductToCartRequest;
-use App\Http\Requests\DashBoard\Product\GetProductRequest;
+use App\Http\Requests\Cart\AddProductToCartRequest;
+use App\Http\Requests\Product\GetProductRequest;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function __construct(private CartService $cartService) {
+    private CartService $cartService ;
+
+    public function __construct(CartService $cartService) {
+        $this->cartService = $cartService ;
     }
 
-    // get cart details
-    public function get_cart_details()
+    public function getCartDetails()
     {
         $user = auth()->user();
 
@@ -23,17 +25,16 @@ class CartController extends Controller
         if ($cart) {
             $this->cartService->updateCartPrices($cart->id);
             $success = $this->cartService->getCartDetails($cart->id);
+
             return $this->sendResponse('', $success);
-        }
-        else {
+        } else {
             $success['cart'] = (object) [];
 
             return $this->sendResponse('', $success);
         }
     }
 
-    //add product to cart
-    public function add_product_to_cart(AddProductToCartRequest $request)
+    public function addProductToCart(AddProductToCartRequest $request)
     {
         $user = auth()->user();
 
@@ -41,8 +42,7 @@ class CartController extends Controller
         return $this->sendResponse(__('messages.added_product_to_cart'), []);
     }
 
-    //remove product from cart 
-    public function remove_product_from_cart(GetProductRequest $request)
+    public function removeProductFromCart(GetProductRequest $request)
     {
         $user = auth()->user();
 

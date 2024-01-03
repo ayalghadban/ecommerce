@@ -4,18 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
 
 class ProductTranslation extends Model
 {
     use HasFactory;
-    protected $table = 'product_translations';
-    protected $fillable = [
-        'product_id' , 'name', 'local'
+
+    public $fillable = [
+        'name',
+        'description',
+        'locale',
     ];
-    public function product1() :BelongsTo
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }
 }
-

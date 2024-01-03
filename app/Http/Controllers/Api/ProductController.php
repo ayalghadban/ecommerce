@@ -1,30 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Product\SearchProductsRequest;
-use App\Http\Requests\DashBoard\Product\GetProductRequest;
+use App\Http\Requests\Product\AllProductsRequest;
+use App\Http\Requests\Product\GetProductRequest;
+use App\Http\Requests\Product\SearchProductsRequest;
 use App\Services\ProductService;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function __construct (private ProductService  $service){
+
+    public function __construct(private ProductService $productService) {
+        $this->productService = $productService ;
     }
 
-    //search products
-    public function search_product(SearchProductsRequest $request)
+    public function searchProduct(SearchProductsRequest $request)
     {
 
-        $success = $this->service->search_product($request->search_keyword);
+        $success = $this->productService->searchProduct($request->search_keyword);
         return $this->sendResponse('', $success);
     }
 
-    //get one product
-    public function get_product(GetProductRequest $request)
+    public function allProducts(AllProductsRequest $request)
     {
-        $success = $this->service->get_one_product($request);
+
+        $success = $this->productService->allProducts($request->per_page, $request->search, $request->filter_category_id);
+        return $this->sendResponse('', $success);
+    }
+
+    public function getProduct(GetProductRequest $request)
+    {
+        $success = $this->productService->getOne($request->product_id);
         return $this->sendResponse('', $success);
     }
 }
