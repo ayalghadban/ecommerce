@@ -8,36 +8,21 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
 // Register Customer
-
-
-
-
 Route::post('register', [AuthController::class, 'register']);
 // Login Customer
-Route::post('login', [AuthController::class, 'customerLogin']);
 
+Route::post('login', [AuthController::class, 'customerLogin']);
 
 // Product
 Route::get('search_product', [ProductController::class, 'searchProduct']);
 Route::get('all_products', [ProductController::class, 'allProducts']);
 Route::get('get_product', [ProductController::class, 'getProduct']);
 
-    // get all category
+// get all category
 Route::get('category' , [CategoryController::class , 'getAllCategory']);
 Route::group(['middleware' => ['auth:sanctum'] ], function () {
-
     // Logout
     Route::get('logout', [AuthController::class, 'logout']);
 
@@ -63,8 +48,6 @@ Route::group(['middleware' => ['auth:sanctum'] ], function () {
         Route::get('details', [OrderController::class, 'getOrderTrackDetails']);
         Route::get('cancel', [OrderController::class, 'cancelOrder']);
     });
-
-
 });
 
 
